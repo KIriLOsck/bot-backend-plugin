@@ -1,0 +1,4 @@
+disnake
+aiohttp-socks
+dotenv
+aiohttp
