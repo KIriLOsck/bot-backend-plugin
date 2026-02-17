@@ -1,10 +1,10 @@
-import aiosqlite
+import aiosqlite, asyncio
 from datetime import datetime
-import asyncio
 
 class UserBase:
     def __init__(self, path: str):
         self.path = path
+        _ = asyncio.create_task(self.create_table())
 
     async def create_table(self):
         async with aiosqlite.connect(self.path) as db:
@@ -18,7 +18,6 @@ class UserBase:
                 )"""
             )
             await db.commit()
-
 
     async def add_user(self, nickname, userid, lastplay = 0, lastip = "0.0.0.0"):
         async with aiosqlite.connect(self.path) as db:
@@ -35,7 +34,6 @@ class UserBase:
             )
             await db.commit()
 
-
     async def check_user(self, nickname, ip):
         async with aiosqlite.connect(self.path) as db:
             cursor = await db.cursor()
@@ -47,7 +45,6 @@ class UserBase:
                     return True
                 else: return False
             return False
-
 
     async def get_user(self, nickname):
         async with aiosqlite.connect(self.path) as db:
@@ -74,11 +71,4 @@ class UserBase:
             cursor = await db.cursor()
             await cursor.execute("DELETE FROM users")
             await db.commit()
-
-
-
-if __name__ == "__main__":
-    base = UserBase("base.db")
-    asyncio.run(base.create_table())
-    # asyncio.run(base.add_user("kirilosck"))
     

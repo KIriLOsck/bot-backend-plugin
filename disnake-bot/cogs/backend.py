@@ -1,22 +1,22 @@
 import disnake
-import config
-import aiohttp, os
+import aiohttp
 from disnake.ext import commands, tasks
 from utils.register import register_user
+from config import settings
 
 
 class BackendIntegration(commands.Cog):
     
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.endpoint = os.getenv("SERVER_ENDPOINT")
+        self.endpoint = settings.SERVER_ENDPOINT
         self.backend_ping.start()
         print(f"Ког {self.__class__.__name__} загружен")
 
 
     @commands.Cog.listener()
     async def on_ready(self):
-        channel = self.bot.get_guild(config.GUILDID).get_channel(config.EVENT_MESSAGE_CHANNEL)
+        channel = self.bot.get_guild(settings.GUILDID).get_channel(settings.EVENT_MESSAGE_CHANNEL)
         async for message in channel.history(limit=10):
             await message.delete()
         views = disnake.ui.View(timeout=None)
@@ -24,7 +24,12 @@ class BackendIntegration(commands.Cog):
 
         embed = disnake.Embed(
             title="Регистрация на сервер майнкрафт (+ ивенты)",
-            description="Нажмите на кнопку ниже, чтобы зарегистрироваться на сервер майнкрафт. Это необходимо для предотвращения логина под чужим никнеймом. При каждом заходе на сервер в ЛС будет приходить код для входа.\n\nНе забудьте разрешить **ЛС от ботов**, иначе вы не сможете получить код для входа!\nВнимательно проверяйте написание никнейма, для изменения никнейма придёься обратиться к администрации сервера.",
+            description=
+            "Нажмите на кнопку ниже, чтобы зарегистрироваться на сервер майнкрафт. \
+            Это необходимо для предотвращения логина под чужим никнеймом. \
+            При каждом заходе на сервер в ЛС будет приходить код для входа.\n\n\
+            Не забудьте разрешить **ЛС от ботов**, иначе вы не сможете получить код для входа!\n\
+            Внимательно проверяйте написание никнейма, для изменения никнейма придёься обратиться к администрации сервера.",
             color=disnake.Color.green()
         )
         await channel.send(embed=embed, view=views)

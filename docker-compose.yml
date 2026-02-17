@@ -1,11 +1,13 @@
-version: '3.8'
 services:
   backend-server:
     build: backend-server/.
+    volumes:
+      - ./backend-server:/app
 
   disnake-bot:
     build: disnake-bot/.
     volumes:
       - ./disnake-bot:/app
-    environment:
-      - SERVER_ENDPOINT=http://backend-server:8000/
+
+volumes:
+  backend-server:

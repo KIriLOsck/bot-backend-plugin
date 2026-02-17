@@ -1,10 +1,9 @@
 import disnake, os
 from disnake.ext import commands
 from aiohttp_socks import ProxyConnector
+from config import settings
 import asyncio
-from dotenv import load_dotenv
 
-load_dotenv()
 loaded_cogs = []
 
 def load_cog(bot: commands.InteractionBot, cog_name: str):
@@ -19,28 +18,33 @@ def load_cog(bot: commands.InteractionBot, cog_name: str):
 
 def load_cogs(bot: commands.InteractionBot):
     for path in os.listdir("./cogs"):
-        if path[-3:] == ".py":
+        if path.endswith(".py"):
             try:
                 load_cog(bot, path[:-3])
             except Exception as e:
                 print(f"[X] Не удалось загрузить ког {path[:-3]}\n{e}")
             
 
+def create_bot():
+    if settings.USE_PROXY:
+        connector = ProxyConnector.from_url(settings.PROXY_URL)
+        bot = commands.InteractionBot(
+            connector=connector,
+            intents=disnake.Intents.all(),
+            test_guilds=[settings.TEST_GUILD], 
+        )
 
-async def create_bot():
-    #connector = ProxyConnector.from_url("socks5://localhost:10808")
-    
-    bot = commands.InteractionBot(
-        #connector=connector,
-        intents=disnake.Intents.all(),
-        test_guilds=[1246829700630839431], 
-    )
-    
+    else:
+        bot = commands.InteractionBot(
+            intents=disnake.Intents.all(),
+            test_guilds=[settings.TEST_GUILD], 
+        )
+
     load_cogs(bot)
     return bot
 
 async def main():
-    bot = await create_bot()
+    bot = create_bot()
 
     @bot.listen()
     async def on_ready():
@@ -69,7 +73,7 @@ async def main():
         else:
             await inter.response.send_message("Noone cogs loaded!")
 
-    await bot.start(os.getenv("BOT_TOKEN"))
+    await bot.start(settings.BOT_TOKEN)
 
 if __name__ == "__main__":
     asyncio.run(main())
