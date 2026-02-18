@@ -30,11 +30,11 @@ class RegisterObject(BaseModel):
 async def check_player(nickname: str, ip: str = "52.52.52.52"):
     result = await base.check_user(nickname, ip)
 
-    if result: return {"answer": 'pass'}
+    if result: return {"serverAnswer": 'pass'}
     else:
         result = await base.get_user(nickname)
-        if result: return {"answer": 'need login'}
-        else: return {"answer": 'not exists'}
+        if result: return {"serverAnswer": 'need login'}
+        else: return {"serverAnswer": 'not exists'}
 
 @app.get("/quit")
 async def mark_quit(nickname: str, ip: str):

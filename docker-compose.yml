@@ -3,6 +3,8 @@ services:
     build: backend-server/.
     volumes:
       - ./backend-server:/app
+    ports:
+      - 8000:8000
 
   disnake-bot:
     build: disnake-bot/.
